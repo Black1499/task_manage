@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzx.dao.TaskMapper">
+  <resultMap id="BaseResultMap" type="com.lzx.entity.Task">
+    <id column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="type_id" jdbcType="INTEGER" property="typeId" />
+    <result column="task_detail" jdbcType="VARCHAR" property="taskDetail" />
+    <result column="task_created_at" jdbcType="TIMESTAMP" property="taskCreatedAt" />
+    <result column="task_finished_at" jdbcType="TIMESTAMP" property="taskFinishedAt" />
+    <result column="task_state" jdbcType="BIT" property="taskState" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from task
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lzx.entity.Task" keyColumn="task_id" useGeneratedKeys="true">
+    insert into task ( type_id, user_id,task_detail)
+    values (#{typeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER} ,#{taskDetail,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.lzx.entity.Task">
+    update task
+    set
+      task_detail = #{taskDetail,jdbcType=VARCHAR},
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateState" parameterType="java.lang.Integer">
+      update task
+      set
+        task_finished_at = now(),
+        task_state = 1
+      where task_id = #{taskId,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="selectByTypeId" resultMap="BaseResultMap">
+    select task_id, type_id, task_detail, task_created_at, task_finished_at, task_state
+    from task
+    where type_id = #{typeId,jdbcType=INTEGER} and task_state = 0
+  </select>
+  <select id="selectByState" resultType="com.lzx.entity.Task">
+     select task_id, type_id, task_detail, task_created_at, task_finished_at, task_state
+    from task where task_state = 1
+  </select>
+</mapper>
